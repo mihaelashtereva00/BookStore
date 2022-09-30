@@ -5,7 +5,7 @@ using BookStore.DL.Repositories.InMemoryRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container. //
 builder.Services.AddSingleton<IPersonInMemoryRepository, PersonInmemoryRepository>();
 builder.Services.AddSingleton<IPersonService, PersonService>();
 builder.Services.AddSingleton<IAuthorInMemoryRepository, AuthorInMemoryRepository>();
