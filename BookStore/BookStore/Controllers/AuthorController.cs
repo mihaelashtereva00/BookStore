@@ -59,6 +59,5 @@ namespace BookStore.Controllers
         {
             return _authorService.DeleteAuthor(id);
         }
-
     }
 }
