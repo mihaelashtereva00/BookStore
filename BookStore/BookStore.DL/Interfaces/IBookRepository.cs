@@ -2,7 +2,7 @@
 
 namespace BookStore.DL.Interfaces
 {
-    public interface IBookInMemoryRepository
+    public interface IBookRepository
     {
         IEnumerable<Book> GetAllBooks();
         Book? GetById(int id);

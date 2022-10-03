@@ -6,8 +6,8 @@ namespace BookStore.BL.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly IPersonInMemoryRepository _personRepository;
-        public PersonService(IPersonInMemoryRepository personRepository)
+        private readonly IPersonRepository _personRepository;
+        public PersonService(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
         }

@@ -1,18 +1,19 @@
-using BookStore.BL.Interfaces;
-using BookStore.BL.Services;
-using BookStore.DL.Interfaces;
-using BookStore.DL.Repositories.InMemoryRepositories;
+using BookStore.Extentions;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
+
+var logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddSerilog(logger);
 
 // Add services to the container. //
-builder.Services.AddSingleton<IPersonInMemoryRepository, PersonInmemoryRepository>();
-builder.Services.AddSingleton<IPersonService, PersonService>();
-builder.Services.AddSingleton<IAuthorInMemoryRepository, AuthorInMemoryRepository>();
-builder.Services.AddSingleton<IAuthorService, AuthorServices>();
-builder.Services.AddSingleton<IBookInMemoryRepository, BookInMemoryRepository>();
-builder.Services.AddSingleton<IBookService, BookService>();
-
+builder.Services.RegisterRepositories()
+                .RegisterServices()
+                .AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
