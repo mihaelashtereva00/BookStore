@@ -1,4 +1,5 @@
 using BookStore.BL.Interfaces;
+using BookStore.BL.Services;
 using BookStore.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,6 @@ namespace BookStore.Controllers
     [Route("[controller]")]
     public class PersonController : ControllerBase
     {
-
         private readonly IPersonService _personService;
         private readonly ILogger<PersonController> _logger;
 
@@ -32,34 +32,60 @@ namespace BookStore.Controllers
             _personService = userInmemoryRepository;
         }
 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet(nameof(Get))]
-        public IEnumerable<Person> Get()
+        public IActionResult Get()
         {
-            return _personService.GetAllUsers();
+
+            var result = _personService.GetAllUsers();
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet(nameof(GetById))]
-        public Person? GetById(int id)
+        public IActionResult GetById(int id)
         {
-            return _personService.GetById(id);
+            if (id <= 0) return BadRequest($"Parameter id:{id} must be greater than 0");
+            var result = _personService.GetById(id);
+            if (result == null) return NotFound(id);
+            return Ok(result);
         }
 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost(nameof(AddModel))]
-        public Person? AddModel([FromBody] Person user)
-        { 
-         return _personService.AddUser(user);
+        public IActionResult AddModel([FromBody] Person user)
+        {
+            if (user == null) return BadRequest($"User can not be null");
+            _personService.AddUser(user);
+            return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut(nameof(AddModel))]
-        public Person? Update([FromBody] Person user)
+        public IActionResult Update([FromBody] Person user)
         {
-            return _personService.UpdateUser(user);
-        }
-        [HttpDelete(nameof(AddModel))]
-        public Person? Delete(int id)
-        {
-            return _personService.DeleteUser(id);
+            if (user == null) return BadRequest($"User can not be null");
+            _personService.UpdateUser(user);
+            return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("Delete")]
+        public IActionResult Delete(int id)
+        {
+            if (id > 0 && _personService.GetById(id) != null)
+            {
+                _personService.DeleteUser(id);
+                return Ok();
+
+            }
+            return BadRequest();
+        }
     }
 }
