@@ -1,9 +1,4 @@
 ﻿using BookStore.Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookStore.DL.Interfaces
 {
@@ -14,6 +9,5 @@ namespace BookStore.DL.Interfaces
         Person? AddUser(Person user);
         Person UpdateUser(Person user);
         Person? DeleteUser(int userId);
-       // Guid GetGuidId();
     }
 }

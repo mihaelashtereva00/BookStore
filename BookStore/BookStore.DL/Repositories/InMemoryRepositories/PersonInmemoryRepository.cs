@@ -1,5 +1,4 @@
 ﻿using BookStore.DL.Interfaces;
-using BookStore.Models;
 using BookStore.Models.Models;
 
 namespace BookStore.DL.Repositories.InMemoryRepositories
@@ -72,9 +71,5 @@ namespace BookStore.DL.Repositories.InMemoryRepositories
 
             return user;
         }
-        //public Guid GetGuidId()
-        //{
-        //    return Id;
-        //}
     }
 }
