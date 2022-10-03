@@ -1,7 +1,4 @@
 using BookStore.BL.Interfaces;
-using BookStore.DL.Interfaces;
-using BookStore.DL.Repositories.InMemoryRepositories;
-using BookStore.Models;
 using BookStore.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,13 +31,6 @@ namespace BookStore.Controllers
             _logger = logger;
             _personService = userInmemoryRepository;
         }
-
-
-        //[HttpGet(nameof(GetGuidId))]
-        //public Guid GetGuidId()
-        //{
-        //    return _userInmemoryRepository.GetGuidId();
-        //}
 
         [HttpGet(nameof(Get))]
         public IEnumerable<Person> Get()
