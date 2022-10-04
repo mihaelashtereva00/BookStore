@@ -2,6 +2,7 @@
 using BookStore.BL.Interfaces;
 using BookStore.DL.Interfaces;
 using BookStore.DL.Repositories.InMemoryRepositories;
+using BookStore.DL.Repositories.MsSql;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
@@ -18,84 +19,93 @@ namespace BookStore.BL.Services
         {
             _bookInMemoryRepository = bookInMemoryRepository;
         }
-        public Book? AddBook(Book book)
+
+
+        public async Task<BookResponse> AddBook(BookRequest bookRequest)
         {
-            return _bookInMemoryRepository.AddBook(book);
-        }
-
-        public BookResponse AddBook(BookRequest bookRequest)
-        {
-            var book = _bookInMemoryRepository.GetById(bookRequest.Id);
-
-            if (book != null)
-                return new BookResponse()
-                {
-                    Book = book,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Message = "Book already exist"
-                };
-
-            if (bookRequest.Id <= 0)
+            try
             {
+                var book = _bookInMemoryRepository.GetById(bookRequest.Id);
+
+                if (book != null)
+                    return new BookResponse()
+                    {
+                        Book = await book,
+                        HttpStatusCode = HttpStatusCode.BadRequest,
+                        Message = "Book already exist"
+                    };
+
+                if (bookRequest.Id <= 0)
+                {
+                    return new BookResponse()
+                    {
+                        HttpStatusCode = HttpStatusCode.BadRequest,
+                        Message = $"Parameter id:{bookRequest.Id} must be greater than 0"
+                    };
+                }
+                var b = _mapper.Map<Book>(bookRequest);
+                var result = _bookInMemoryRepository.AddBook(_mapper.Map<Book>(b));
+
                 return new BookResponse()
                 {
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Parameter id:{bookRequest.Id} must be greater than 0"
+                    HttpStatusCode = HttpStatusCode.OK,
+                    Book = await result,
+                    Message = "Successfully added book"
                 };
             }
-            var b = _mapper.Map<Book>(bookRequest);
-            var result = _bookInMemoryRepository.AddBook(_mapper.Map<Book>(b));
-
-            return new BookResponse()
+            catch (Exception e)
             {
-                HttpStatusCode = HttpStatusCode.OK,
-                Book = result,
-                Message = "Successfully added book"
-            };
+
+                throw new Exception(e.Message);
+            }
         }
 
-        public Book? DeleteBook(int bookId)
+        public async Task<Book?> DeleteBook(int bookId)
         {
-            return _bookInMemoryRepository.DeleteBook(bookId);
+            return await _bookInMemoryRepository.DeleteBook(bookId);
         }
 
-        public IEnumerable<Book> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return _bookInMemoryRepository.GetAllBooks();
+            return await _bookInMemoryRepository.GetAllBooks();
         }
 
-        public Book? GetById(int id)
+        public async Task<Book?> GetById(int id)
         {
-            return _bookInMemoryRepository.GetById(id);
+            return await _bookInMemoryRepository.GetById(id);
         }
 
-        public Book UpdateBook(Book book)
-        {
-            return _bookInMemoryRepository.UpdateBook(book);
-        }
-
-        public BookResponse UpdateBook(BookRequest bookRequest)
+        public async Task<BookResponse> UpdateBook(BookRequest bookRequest)
         {
 
-            var book = _bookInMemoryRepository.GetById(bookRequest.Id);
+            try
+            {
 
-            if (book == null)
+                var book = await _bookInMemoryRepository.GetById(bookRequest.Id);
+
+                if (book == null)
+                    return new BookResponse()
+                    {
+                        Book = book,
+                        HttpStatusCode = HttpStatusCode.BadRequest,
+                        Message = "Book does not exist"
+                    };
+
+                var b = _mapper.Map<Book>(bookRequest);
+                var result = await _bookInMemoryRepository.UpdateBook(b);
+
                 return new BookResponse()
                 {
-                    Book = book,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Message = "Book does not exist"
+                    HttpStatusCode = HttpStatusCode.OK,
+                    Book = result,
+                    Message = "Successfully updated book"
                 };
 
-            var b = _mapper.Map<Book>(book);
-            var result = _bookInMemoryRepository.UpdateBook(b);
-
-            return new BookResponse()
+            }
+            catch (Exception e)
             {
-                HttpStatusCode = HttpStatusCode.OK,
-                Book = result,
-                Message = "Successfully updated book"
-            };
+                throw new Exception(e.Message); ;
+            }
         }
     }
 }

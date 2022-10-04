@@ -2,9 +2,10 @@
 {
     public class AuthorRequest
     {
-        public string Name { get; init; }
-        public int Age { get; init; }
-        public DateTime DateOfBirth { get; init; }
-        public string Nickname { get; init; }
+        public int Id { get; init; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string Nickname { get; set; }
     }
 }

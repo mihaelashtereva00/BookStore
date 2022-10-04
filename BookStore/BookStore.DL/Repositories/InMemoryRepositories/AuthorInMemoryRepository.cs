@@ -4,9 +4,14 @@ using Microsoft.Extensions.Logging;
 
 namespace BookStore.DL.Repositories.InMemoryRepositories
 {
-    public class AuthorInMemoryRepository : IAuthorRepository
+    public class AuthorInMemoryRepository 
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<AuthorInMemoryRepository> _logger;
+
+        public AuthorInMemoryRepository(ILogger<AuthorInMemoryRepository> logger)
+        {
+            _logger = logger;
+        }
 
         private static List<Author> _authors = new()
         {
@@ -98,6 +103,19 @@ namespace BookStore.DL.Repositories.InMemoryRepositories
             }
         }
 
-
+        public bool AddMultipleAuthors(IEnumerable<Author> authorCollection)
+        {
+            try
+            {
+                _logger.LogInformation("Range of authors added");
+                _authors.AddRange(authorCollection);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning($"Could not add range with message: {e}");
+                return false;
+            }
+        }
     }
 }

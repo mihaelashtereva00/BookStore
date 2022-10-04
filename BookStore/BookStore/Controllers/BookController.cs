@@ -14,7 +14,6 @@ namespace BookStore.Controllers
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BookController> _logger;
-        private readonly IMapper _mapper;
 
         private static readonly List<Book> _testModels = new List<Book>()
      {
@@ -64,40 +63,27 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("Add book")]
-        public IActionResult AddBook([FromBody] BookRequest bookRequest)
+        public async Task<IActionResult> AddBook([FromBody] BookRequest bookRequest)
         {
-
-            var result = _bookService.AddBook(bookRequest);
-
-            if (result.HttpStatusCode == HttpStatusCode.BadRequest)
-                return BadRequest(result);
-
-            return Ok(result);
+            return Ok(await _bookService.AddBook(bookRequest));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("Update book")]
-        public IActionResult Update(BookRequest bookRequest)
+        public async Task<IActionResult> Update(BookRequest bookRequest)
         {
-            var result = _bookService.UpdateBook(bookRequest);
-
-            if (result.HttpStatusCode == HttpStatusCode.BadRequest)
-                return BadRequest(result);
-
-            return Ok(result);
+            return Ok(await _bookService.UpdateBook(bookRequest));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("Delete book")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id > 0 && _bookService.GetById != null)
             {
-                _bookService.DeleteBook(id);
-                return Ok();
-
+                return Ok(await _bookService.DeleteBook(id));
             }
             return BadRequest();
         }

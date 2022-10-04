@@ -3,7 +3,7 @@ using BookStore.Models.Models;
 
 namespace BookStore.DL.Repositories.InMemoryRepositories
 {
-    public class BookInMemoryRepository : IBookRepository
+    public class BookInMemoryRepository 
     {
         private static List<Book> _books = new List<Book>()
         {

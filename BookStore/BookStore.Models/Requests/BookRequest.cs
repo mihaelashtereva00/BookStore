@@ -9,7 +9,10 @@ namespace BookStore.Models.Requests
     public class BookRequest
     {
         public int Id { get; set; }
-        public string Title { get; init; }
         public int AuthorId { get; init; }
+        public string Title { get; init; }
+        public DateTime LastUpdated { get; set; }
+        public int Quanity { get; set; }
+        public decimal Price { get; set; }
     }
 }
