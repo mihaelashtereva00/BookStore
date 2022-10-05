@@ -20,7 +20,7 @@ namespace BookStore.HealthChecks
                 {
                     await _authorService.GetAllAuthors();
                 }
-                catch (SqlException e)
+                catch (Exception e)
                 {
                     return HealthCheckResult.Unhealthy(e.Message);
                 }
