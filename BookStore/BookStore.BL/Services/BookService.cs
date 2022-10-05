@@ -6,6 +6,7 @@ using BookStore.DL.Repositories.MsSql;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace BookStore.BL.Services
@@ -14,11 +15,13 @@ namespace BookStore.BL.Services
     {
         private readonly IBookRepository _bookInMemoryRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<BookService> _logger;
 
-        public BookService(IBookRepository bookInMemoryRepository, IMapper mapper)
+        public BookService(IBookRepository bookInMemoryRepository, IMapper mapper, ILogger<BookService> logger)
         {
             _bookInMemoryRepository = bookInMemoryRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -109,6 +112,7 @@ namespace BookStore.BL.Services
             }
             catch (Exception e)
             {
+                _logger.LogError($"Error when Updating book with Id {bookRequest.Id} : {e}");
                 throw new Exception(e.Message); ;
             }
         }
