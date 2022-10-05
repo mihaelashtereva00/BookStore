@@ -27,6 +27,7 @@ namespace BookStore.DL.Repositories.MsSql
                     await conn.OpenAsync();
                     var query = "INSERT INTO Books (AuthorId, Title, LastUpdated, Quantity, Price) VALUES ( @AuthorId, @Title, @LastUpdated, @Quantity, @Price)";
                     var resul = conn.ExecuteAsync(query, book);
+                    _logger.LogInformation("Book added");
                     return book;
                 }
             }
@@ -49,7 +50,7 @@ namespace BookStore.DL.Repositories.MsSql
             }
             catch (Exception)
             {
-                _logger.LogInformation("Could not add book");
+                _logger.LogInformation("Could not delete book");
                 return null;
             }
         }
@@ -106,6 +107,26 @@ namespace BookStore.DL.Repositories.MsSql
                 _logger.LogError($"Error in {nameof(UpdateBook)} - {ex.Message}", ex);
             }
             return null;
+        }
+
+        public async Task<bool> DoesAuthorExist(int id)
+        {
+            await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await conn.OpenAsync();
+                var auhtor = await conn.QueryMultipleAsync("SELECT * FROM Authors WITH(NOLOCK) WHERE AuthorId = @AuthorId", new { AuthorId = id });
+                if (auhtor != null)
+                {
+                    return true;
+                    _logger.LogInformation("Author exists");
+                }
+                else return false;
+
+            }
+
+            _logger.LogError("Author does not exist");
+            return false;
+
         }
     }
 }
