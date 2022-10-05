@@ -15,9 +15,10 @@ namespace BookStore.BL.Services
         private readonly IBookRepository _bookInMemoryRepository;
         private readonly IMapper _mapper;
 
-        public BookService(IBookRepository bookInMemoryRepository)
+        public BookService(IBookRepository bookInMemoryRepository, IMapper mapper)
         {
             _bookInMemoryRepository = bookInMemoryRepository;
+            _mapper = mapper;
         }
 
 
@@ -25,15 +26,17 @@ namespace BookStore.BL.Services
         {
             try
             {
-                var book = _bookInMemoryRepository.GetById(bookRequest.Id);
+                var book = await _bookInMemoryRepository.GetById(bookRequest.Id);
 
                 if (book != null)
+                {
                     return new BookResponse()
                     {
-                        Book = await book,
+                        Book =  book,
                         HttpStatusCode = HttpStatusCode.BadRequest,
                         Message = "Book already exist"
                     };
+                }
 
                 if (bookRequest.Id <= 0)
                 {
@@ -44,7 +47,7 @@ namespace BookStore.BL.Services
                     };
                 }
                 var b = _mapper.Map<Book>(bookRequest);
-                var result = _bookInMemoryRepository.AddBook(_mapper.Map<Book>(b));
+                var result = _bookInMemoryRepository.AddBook(b);
 
                 return new BookResponse()
                 {
@@ -84,12 +87,14 @@ namespace BookStore.BL.Services
                 var book = await _bookInMemoryRepository.GetById(bookRequest.Id);
 
                 if (book == null)
+                {
                     return new BookResponse()
                     {
                         Book = book,
                         HttpStatusCode = HttpStatusCode.BadRequest,
                         Message = "Book does not exist"
                     };
+                }
 
                 var b = _mapper.Map<Book>(bookRequest);
                 var result = await _bookInMemoryRepository.UpdateBook(b);

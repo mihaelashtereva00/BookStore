@@ -40,9 +40,9 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("Get all")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var result = _bookService.GetAllBooks();
+            var result = await _bookService.GetAllBooks();
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -52,10 +52,10 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet(nameof(GetById))]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0) return BadRequest($"Parameter id:{id} must be greater than 0");
-            var result = _bookService.GetById(id);
+            var result = await _bookService.GetById(id);
             if (result == null) return NotFound(id);
             return Ok(result);
         }
@@ -73,7 +73,12 @@ namespace BookStore.Controllers
         [HttpPut("Update book")]
         public async Task<IActionResult> Update(BookRequest bookRequest)
         {
-            return Ok(await _bookService.UpdateBook(bookRequest));
+            var result = await _bookService.UpdateBook(bookRequest);
+
+            if (result.HttpStatusCode == HttpStatusCode.BadRequest)
+                return BadRequest(result);
+
+            return Ok(result);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

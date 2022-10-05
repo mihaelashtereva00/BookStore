@@ -37,24 +37,75 @@ namespace BookStore.DL.Repositories.MsSql
             }
         }
 
-        public Task<Book?> DeleteBook(int bookId)
+        public async Task<Book?> DeleteBook(int bookId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    await conn.OpenAsync();
+                    return await conn.QueryFirstOrDefaultAsync<Book>("DELETE FROM Books WHERE Id = @Id", new { Id = bookId });
+                }
+            }
+            catch (Exception)
+            {
+                _logger.LogInformation("Could not add book");
+                return null;
+            }
         }
 
-        public Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            throw new NotImplementedException();
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    await conn.OpenAsync();
+                    return await conn.QueryAsync<Book>("SELECT * FROM Books WITH(NOLOCK)");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in {nameof(GetAllBooks)} - {ex.Message}", ex);
+            }
+            return Enumerable.Empty<Book>();
         }
 
-        public Task<Book?> GetById(int id)
+        public async Task<Book?> GetById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    await conn.OpenAsync();
+                    return await conn.QueryFirstOrDefaultAsync<Book>("SELECT * FROM Books WITH(NOLOCK) WHERE Id = @Id", new { Id = id });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in {nameof(GetById)} - {ex.Message}", ex);
+            }
+            return new Book();
         }
 
-        public Task<Book> UpdateBook(Book book)
+        public async Task<Book> UpdateBook(Book book)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    await conn.OpenAsync();
+                    var query = "UPDATE Books SET AuthorId = @AuthorId, Title = @Title, LastUpdated = @LastUpdated, Quantity = @Quantity, Price = @Price WHERE Id = @Id";
+                    var result = await conn.ExecuteScalarAsync(query, book);
+                    return book;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in {nameof(UpdateBook)} - {ex.Message}", ex);
+            }
+            return null;
         }
     }
 }

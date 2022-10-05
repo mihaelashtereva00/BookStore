@@ -27,8 +27,8 @@ namespace BookStore.DL.Repositories.MsSql
                 {
                     await conn.OpenAsync();
                     var query = "INSERT INTO Authors (Name,Age,DateOfBirth,NickName) VALUES ( @Name, @Age,  @DateOfBirth,  @NickName)";
-                    var resul =  conn.ExecuteAsync(query, author);
-                       return author;
+                    var resul = conn.ExecuteAsync(query, author);
+                    return author;
                 }
             }
             catch (Exception)
@@ -45,7 +45,7 @@ namespace BookStore.DL.Repositories.MsSql
                 await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     await conn.OpenAsync();
-                    var result =  await conn.ExecuteAsync("INSERT INTO Authors (Name,Age,DateOfBirth,NickName) VALUES (@Name, @Age,  @DateOfBirth,  @NickName)"
+                    var result = await conn.ExecuteAsync("INSERT INTO Authors (Name,Age,DateOfBirth,NickName) VALUES (@Name, @Age,  @DateOfBirth,  @NickName)"
                         , authorCollection);
                     return result > 0;
                 }
@@ -63,8 +63,16 @@ namespace BookStore.DL.Repositories.MsSql
             {
                 await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    await conn.OpenAsync();
-                    return await conn.QueryFirstOrDefaultAsync<Author>("DELETE FROM Authors WHERE Id = @Id", new { Id = userId});
+                   
+                    if (await AuthorHasBooks(userId))
+                    {
+                        _logger.LogError("The author has books");
+                        return null;
+                    }
+                    else {
+                        await conn.OpenAsync();
+                        return await conn.QueryFirstOrDefaultAsync<Author>("DELETE FROM Authors WHERE Id = @Id", new { Id = userId });
+                    }
                 }
             }
             catch (Exception)
@@ -86,7 +94,7 @@ namespace BookStore.DL.Repositories.MsSql
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllAuthors)}:{e.Message}",e);
+                _logger.LogError($"Error in {nameof(GetAllAuthors)}:{e.Message}", e);
             }
             return Enumerable.Empty<Author>();
         }
@@ -161,6 +169,19 @@ namespace BookStore.DL.Repositories.MsSql
             }
             return null;
         }
+
+        public async Task<bool> AuthorHasBooks(int authorId)
+        {
+            await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await conn.OpenAsync();
+                var books = await conn.QueryMultipleAsync("SELECT * FROM Books WITH(NOLOCK) WHERE AuthorId = @Id", new { Id = authorId });
+                if (books != null) return true;
+              
+            }
+            return false;
+        }
+
 
     }
 }
