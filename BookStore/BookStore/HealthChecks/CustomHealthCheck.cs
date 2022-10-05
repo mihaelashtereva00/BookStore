@@ -18,7 +18,7 @@ namespace BookStore.HealthChecks
         {            
                 try
                 {
-                    await _authorService.GetAllAuthors();
+
                 }
                 catch (Exception e)
                 {
