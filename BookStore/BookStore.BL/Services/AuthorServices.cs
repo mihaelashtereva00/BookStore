@@ -5,6 +5,7 @@ using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Net;
 
 namespace BookStore.BL.Services
@@ -13,33 +14,32 @@ namespace BookStore.BL.Services
     {
         private readonly IAuthorRepository _authorInMemoryRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<AuthorServices> _logger;
 
-        public AuthorServices(IAuthorRepository authorInMemoryRepository, IMapper mapper)
+        public AuthorServices(IAuthorRepository authorInMemoryRepository, IMapper mapper, ILogger<AuthorServices> logger)
         {
             _authorInMemoryRepository = authorInMemoryRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public AuthorResponse AddAuthor(AuthorRequest authorRequest)
+        public async Task<AuthorResponse> AddAuthor(AuthorRequest authorRequest)
         {
             try
             {
-                var auth = _authorInMemoryRepository.GetByName(authorRequest.Name);
+                var auth = await _authorInMemoryRepository.GetByName(authorRequest.Name);
 
                 if (auth != null)
-                    _logger.LogInformation("Author already exist");
-                    return new AuthorResponse()
-                    {
+                return new AuthorResponse()
+                {
                     Author = auth,
                     HttpStatusCode = HttpStatusCode.BadRequest,
                     Message = "Author already exist"
-                    };
+                };
 
                 var author = _mapper.Map<Author>(authorRequest);
-                var result = _authorInMemoryRepository.AddAuthor(author);
+                var result = await _authorInMemoryRepository.AddAuthor(author);
 
-                _logger.LogInformation("Successfully added author");
                 return new AuthorResponse()
                 {
                     HttpStatusCode = HttpStatusCode.OK,
@@ -56,53 +56,55 @@ namespace BookStore.BL.Services
 
         }
 
-        public Author? DeleteAuthor(int userId)
+        public async Task<Author?> DeleteAuthor(int userId)
         {
             _logger.LogInformation("Successfully deleted author");
-            return _authorInMemoryRepository.DeleteAuthor(userId);
+            return await _authorInMemoryRepository.DeleteAuthor(userId);
         }
 
-        public IEnumerable<Author> GetAllAuthors()
+        public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            _logger.LogInformation("Successfully got all authors");
-            return _authorInMemoryRepository.GetAllAuthors();
+            return await _authorInMemoryRepository.GetAllAuthors();
         }
 
-        public Author? GetById(int id)
+        public async Task<Author?> GetById(int id)
         {
             _logger.LogInformation("Successfully got author by ID");
-            return _authorInMemoryRepository.GetById(id);
+            return await _authorInMemoryRepository.GetById(id);
         }
 
-        public Author? GetByNickname(string nickname)
+        public async Task<Author?> GetByNickname(string nickname)
         {
             _logger.LogInformation("Successfully got author by nickname");
-            return _authorInMemoryRepository.GetByNickname(nickname);
+            return await _authorInMemoryRepository.GetByNickname(nickname);
         }
-        public Author? GetByName(string name)
+        public async Task<Author?> GetByName(string name)
         {
             _logger.LogInformation("Successfully got author by name");
-            return _authorInMemoryRepository.GetByName(name);
+            return await _authorInMemoryRepository.GetByName(name);
         }
 
-        public AuthorResponse UpdateAuthor(AuthorRequest authorRequest)
+        public async Task<AuthorResponse> UpdateAuthor(AuthorRequest authorRequest)
         {
             try
             {
 
-                var auth = _authorInMemoryRepository.GetByName(authorRequest.Name);
+                var auth = await _authorInMemoryRepository.GetById(authorRequest.Id);
+               
 
                 if (auth == null)
-                    _logger.LogError("Author does not exist");
-                return new AuthorResponse()
                 {
-                    Author = auth,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Message = "Author does not exist"
-                };
+                    _logger.LogError("Author does not exist - null");
+                    return new AuthorResponse()
+                    {
+                        Author = auth,
+                        HttpStatusCode = HttpStatusCode.BadRequest,
+                        Message = "Author does not exist - null"
+                    };
+                }
 
-                var author = _mapper.Map<Author>(auth);
-                var result = _authorInMemoryRepository.UpdateAuthor(author);
+                var author = _mapper.Map<Author>(authorRequest);
+                var result = await _authorInMemoryRepository.UpdateAuthor(author);
 
                 _logger.LogInformation("Successfully updated author");
                 return new AuthorResponse()
@@ -120,5 +122,12 @@ namespace BookStore.BL.Services
             }
 
         }
+
+        public async Task<bool> AddMultipleAuthors(IEnumerable<Author> authorCollection)
+        {
+            return await _authorInMemoryRepository.AddMultipleAuthors(authorCollection);
+        }
+
+
     }
 }

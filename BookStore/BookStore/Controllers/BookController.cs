@@ -14,7 +14,6 @@ namespace BookStore.Controllers
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BookController> _logger;
-        private readonly IMapper _mapper;
 
         private static readonly List<Book> _testModels = new List<Book>()
      {
@@ -41,9 +40,9 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("Get all")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var result = _bookService.GetAllBooks();
+            var result = await _bookService.GetAllBooks();
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -53,10 +52,10 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet(nameof(GetById))]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0) return BadRequest($"Parameter id:{id} must be greater than 0");
-            var result = _bookService.GetById(id);
+            var result = await _bookService.GetById(id);
             if (result == null) return NotFound(id);
             return Ok(result);
         }
@@ -64,23 +63,17 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("Add book")]
-        public IActionResult AddBook([FromBody] BookRequest bookRequest)
+        public async Task<IActionResult> AddBook([FromBody] BookRequest bookRequest)
         {
-
-            var result = _bookService.AddBook(bookRequest);
-
-            if (result.HttpStatusCode == HttpStatusCode.BadRequest)
-                return BadRequest(result);
-
-            return Ok(result);
+            return Ok(await _bookService.AddBook(bookRequest));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("Update book")]
-        public IActionResult Update(BookRequest bookRequest)
+        public async Task<IActionResult> Update(BookRequest bookRequest)
         {
-            var result = _bookService.UpdateBook(bookRequest);
+            var result = await _bookService.UpdateBook(bookRequest);
 
             if (result.HttpStatusCode == HttpStatusCode.BadRequest)
                 return BadRequest(result);
@@ -91,13 +84,11 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("Delete book")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id > 0 && _bookService.GetById != null)
             {
-                _bookService.DeleteBook(id);
-                return Ok();
-
+                return Ok(await _bookService.DeleteBook(id));
             }
             return BadRequest();
         }
