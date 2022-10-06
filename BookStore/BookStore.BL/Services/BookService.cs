@@ -83,10 +83,8 @@ namespace BookStore.BL.Services
 
         public async Task<BookResponse> UpdateBook(BookRequest bookRequest)
         {
-
             try
             {
-
                 var book = await _bookInMemoryRepository.GetById(bookRequest.Id);
 
                 if (book == null)

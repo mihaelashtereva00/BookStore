@@ -65,7 +65,12 @@ namespace BookStore.Controllers
         [HttpPost("Add book")]
         public async Task<IActionResult> AddBook([FromBody] BookRequest bookRequest)
         {
-            return Ok(await _bookService.AddBook(bookRequest));
+            var result = await  _bookService.AddBook(bookRequest);
+
+            if (result.HttpStatusCode == HttpStatusCode.BadRequest)
+                return BadRequest(result);
+
+            return Ok(result);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
