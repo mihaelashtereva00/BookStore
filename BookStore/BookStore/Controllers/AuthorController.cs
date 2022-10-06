@@ -115,12 +115,12 @@ namespace BookStore.Controllers
         [HttpDelete(nameof(Delete))]
         public async Task<IActionResult> Delete(int id)
         {
+                var result = await _authorService.DeleteAuthor(id);
             if (id > 0 && _authorService.GetById(id) != null)
             {
-                await _authorService.DeleteAuthor(id);
-                return Ok();
+                return Ok(result);
             }
-            return BadRequest();
+            return BadRequest(result);
         }
     }
 }

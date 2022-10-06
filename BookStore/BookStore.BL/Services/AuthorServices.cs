@@ -99,7 +99,7 @@ namespace BookStore.BL.Services
                     {
                         Author = auth,
                         HttpStatusCode = HttpStatusCode.BadRequest,
-                        Message = "Author does not exist - null"
+                        Message = "Author does not exist"
                     };
                 }
 

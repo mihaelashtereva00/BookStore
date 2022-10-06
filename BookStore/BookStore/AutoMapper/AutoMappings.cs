@@ -4,7 +4,7 @@ using BookStore.Models.Requests;
 
 namespace BookStore.AutoMapper
 {
-    public class AutoMappings : Profile
+    internal class AutoMappings : Profile
     {
         public AutoMappings()
         {
