@@ -3,17 +3,12 @@ using BookStore.AutoMapper;
 using BookStore.BL.Services;
 using BookStore.Controllers;
 using BookStore.DL.Interfaces;
-using BookStore.DL.Repositories.MsSql;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
-using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BookStore.Tests
 {
@@ -113,7 +108,7 @@ namespace BookStore.Tests
         }
 
         [Fact]
-        public async Task Author_GetBookById_NotFound()
+        public async Task GetBookById_NotFound()
         {
             //setup
             var bookId = 3;

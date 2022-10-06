@@ -6,13 +6,9 @@ using BookStore.DL.Interfaces;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
-using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BookStore.Tests
 {
@@ -43,7 +39,6 @@ namespace BookStore.Tests
         private Mock<ILogger<AuthorController>> _loggerAuthorControllerMock;
         private readonly Mock<IAuthorRepository> _authorRepositoryMock;
 
-        //IAuthorRepository authorInMemoryRepository, IMapper mapper, ILogger<AuthorServices> logger
         public AuthorTest()
         {
             var mockMapperConfig = new MapperConfiguration(cfg =>
