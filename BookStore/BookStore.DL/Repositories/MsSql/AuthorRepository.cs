@@ -63,16 +63,8 @@ namespace BookStore.DL.Repositories.MsSql
             {
                 await using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                   
-                    if (await AuthorHasBooks(userId))
-                    {
-                        _logger.LogError("The author has books");
-                        return null;
-                    }
-                    else {
                         await conn.OpenAsync();
                         return await conn.QueryFirstOrDefaultAsync<Author>("DELETE FROM Authors WHERE Id = @Id", new { Id = userId });
-                    }
                 }
             }
             catch (Exception)

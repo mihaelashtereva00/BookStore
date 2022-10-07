@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BookStore.BL.Interfaces;
+using BookStore.Models.MediatR.Commands;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -14,6 +16,7 @@ namespace BookStore.Controllers
         private readonly IAuthorService _authorService;
         private readonly ILogger<AuthorController> _logger;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         private static readonly List<Author> _testModels = new List<Author>()
         {
@@ -29,11 +32,12 @@ namespace BookStore.Controllers
             }
         };
 
-        public AuthorController(ILogger<AuthorController> logger, IAuthorService authorService, IMapper mapper)
+        public AuthorController(ILogger<AuthorController> logger, IAuthorService authorService, IMapper mapper, IMediator mediator)
         {
             _logger = logger;
             _authorService = authorService;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
        [ProducesResponseType(StatusCodes.Status200OK)]
@@ -41,7 +45,7 @@ namespace BookStore.Controllers
        [HttpPost("Add author")]
        public async Task<IActionResult> AddAuthorAsync([FromBody] AuthorRequest addAuthorRequest)
         {
-            var result = await _authorService.AddAuthor(addAuthorRequest);
+            var result = await _mediator.Send(new AddAuthorCommand(addAuthorRequest));
 
             if (result.HttpStatusCode == HttpStatusCode.BadRequest)
                 return BadRequest(result);
@@ -54,7 +58,7 @@ namespace BookStore.Controllers
         [HttpGet("Get all")]
         public async Task<IActionResult> Get()
         {
-            return Ok(await _authorService.GetAllAuthors());
+            return Ok(await _mediator.Send(new GetAllAuthorsCommand()));
         }
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -81,7 +85,7 @@ namespace BookStore.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0) return BadRequest($"Parameter id:{id} must be greater than 0");
-            var result = await _authorService.GetById(id);
+            var result = await _mediator.Send(new GetByIdAuthorCommand(id));
             if (result == null) return NotFound(id);
             return Ok(result);
         }
@@ -94,7 +98,7 @@ namespace BookStore.Controllers
             if (name.Length <= 0) return BadRequest($"Parameter name:{name} must be greater than 0");
             var result = await _authorService.GetByName(name);
             if (result == null) return NotFound();
-            return Ok();
+            return Ok(result);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -102,7 +106,7 @@ namespace BookStore.Controllers
         [HttpPut("Update author")]
         public async Task<IActionResult> Update(AuthorRequest updateAuthorRequest)
         {
-            var result = await _authorService.UpdateAuthor(updateAuthorRequest);
+            var result = await _mediator.Send(new UpdateAuthorCommand(updateAuthorRequest));
 
             if (result.HttpStatusCode == HttpStatusCode.BadRequest)
                 return BadRequest(result);
@@ -115,12 +119,14 @@ namespace BookStore.Controllers
         [HttpDelete(nameof(Delete))]
         public async Task<IActionResult> Delete(int id)
         {
-                var result = await _authorService.DeleteAuthor(id);
-            if (id > 0 && _authorService.GetById(id) != null)
+            if (id > 0 && _authorService.GetById != null)
             {
+                var result = await _mediator.Send(new DeleteAuthorCommand(id));
                 return Ok(result);
             }
-            return BadRequest(result);
+            return BadRequest();
         }
     }
 }
+
+//book update  
