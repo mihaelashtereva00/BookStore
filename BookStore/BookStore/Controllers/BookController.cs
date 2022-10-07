@@ -46,6 +46,8 @@ namespace BookStore.Controllers
         [HttpGet("Get all")]
         public async Task<IActionResult> Get()
         {
+            throw new Exception("Test exception");
+
             var result = await _mediator.Send(new GetAllBooksCommand());
             if (result == null) return NotFound();
             return Ok(result);

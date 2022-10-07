@@ -1,10 +1,13 @@
 using BookStore.BL.CommandHandlers;
 using BookStore.Extentions;
 using BookStore.HealthChecks;
+using BookStore.Middleware;
 using BookStore.Models.MediatR.Commands;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -57,5 +60,16 @@ app.MapControllers();
 
 //app.MapHealthChecks("/health");
 app.RegisterHealthChecks();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<CustomMiddleware>();
+
+WebHost.CreateDefaultBuilder(args)
+        .UseStartup<Program>()
+        .ConfigureLogging((ctx, logging) =>
+        {
+            logging.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+        });
+
 
 app.Run();
