@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BookStore.BL.Interfaces;
 using BookStore.BL.Services;
+using BookStore.Models.MediatR.Commands;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -14,6 +16,7 @@ namespace BookStore.Controllers
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BookController> _logger;
+        private readonly IMediator _mediator;
 
         private static readonly List<Book> _testModels = new List<Book>()
      {
@@ -30,10 +33,11 @@ namespace BookStore.Controllers
             AuthorId = 2
         } };
 
-        public BookController(ILogger<BookController> logger, IBookService bookService)
+        public BookController(ILogger<BookController> logger, IBookService bookService, IMediator mediator )
         {
             _logger = logger;
             _bookService = bookService;
+            _mediator = mediator;
         }
 
 
@@ -42,7 +46,7 @@ namespace BookStore.Controllers
         [HttpGet("Get all")]
         public async Task<IActionResult> Get()
         {
-            var result = await _bookService.GetAllBooks();
+            var result = await _mediator.Send(new GetAllBooksCommand());
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -55,7 +59,7 @@ namespace BookStore.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0) return BadRequest($"Parameter id:{id} must be greater than 0");
-            var result = await _bookService.GetById(id);
+            var result = await _mediator.Send(new GetByIdCommand(id));
             if (result == null) return NotFound(id);
             return Ok(result);
         }
@@ -65,7 +69,7 @@ namespace BookStore.Controllers
         [HttpPost("Add book")]
         public async Task<IActionResult> AddBook([FromBody] BookRequest bookRequest)
         {
-            var result = await  _bookService.AddBook(bookRequest);
+            var result = await _mediator.Send( new AddBookCommand(bookRequest));
 
             if (result.HttpStatusCode == HttpStatusCode.BadRequest)
                 return BadRequest(result);
@@ -78,7 +82,7 @@ namespace BookStore.Controllers
         [HttpPut("Update book")]
         public async Task<IActionResult> Update(BookRequest bookRequest)
         {
-            var result = await _bookService.UpdateBook(bookRequest);
+            var result = await _mediator.Send(new UpdateBookCommand(bookRequest));
 
             if (result.HttpStatusCode == HttpStatusCode.BadRequest)
                 return BadRequest(result);
@@ -93,7 +97,7 @@ namespace BookStore.Controllers
         {
             if (id > 0 && _bookService.GetById != null)
             {
-                return Ok(await _bookService.DeleteBook(id));
+                return Ok(await _mediator.Send(new DeleteBookCommand(id)));
             }
             return BadRequest();
         }
