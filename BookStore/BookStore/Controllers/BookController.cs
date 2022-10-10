@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using BookStore.BL.Interfaces;
-using BookStore.BL.Services;
+﻿using BookStore.BL.Interfaces;
 using BookStore.Models.MediatR.Commands;
-using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,22 +16,22 @@ namespace BookStore.Controllers
         private readonly ILogger<BookController> _logger;
         private readonly IMediator _mediator;
 
-        private static readonly List<Book> _testModels = new List<Book>()
-     {
-        new Book()
-        {
-            Id = 1,
-            Title = "Book 1",
-            AuthorId = 1
-        },
-        new Book()
-        {
-            Id = 2,
-            Title = "Book2",
-            AuthorId = 2
-        } };
+        //   private static readonly List<Book> _testModels = new List<Book>()
+        //{
+        //   new Book()
+        //   {
+        //       Id = 1,
+        //       Title = "Book 1",
+        //       AuthorId = 1
+        //   },
+        //   new Book()
+        //   {
+        //       Id = 2,
+        //       Title = "Book2",
+        //       AuthorId = 2
+        //   } };
 
-        public BookController(ILogger<BookController> logger, IBookService bookService, IMediator mediator )
+        public BookController(ILogger<BookController> logger, IBookService bookService, IMediator mediator)
         {
             _logger = logger;
             _bookService = bookService;

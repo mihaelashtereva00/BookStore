@@ -18,7 +18,6 @@ namespace BookStore.Controllers
         private readonly IConfiguration _configuration;
         private readonly IIdentityService _identityService;
 
-
         public IdentityController(IConfiguration configuration, IIdentityService identityService)
         {
             _configuration = configuration;
@@ -34,11 +33,9 @@ namespace BookStore.Controllers
                 return BadRequest("Username or password is missing");
             }
 
-
             var result = await _identityService.CreateAsync(user);
             return result.Succeeded ? Ok(result) : BadRequest(result);
         }
-
 
         [AllowAnonymous]
         [HttpPost]
