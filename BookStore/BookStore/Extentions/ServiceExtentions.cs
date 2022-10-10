@@ -13,6 +13,8 @@ namespace BookStore.Extentions
             services.AddSingleton<IPersonRepository, PersonInmemoryRepository>();
             services.AddSingleton<IAuthorRepository, AuthorRepository>();
             services.AddSingleton<IBookRepository, BookRepository>();
+            services.AddSingleton<IUserInfoRepository, UserInfoRepository>();
+            services.AddSingleton<IEmployeesRepository, EmployeeRepository>();
 
             return services;
         }
@@ -21,6 +23,8 @@ namespace BookStore.Extentions
             services.AddSingleton<IPersonService, PersonService>();
             services.AddSingleton<IAuthorService, AuthorServices>();
             services.AddSingleton<IBookService, BookService>();
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
             
             return services;
         }
