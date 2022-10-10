@@ -10,7 +10,7 @@ namespace BookStore.BL.Interfaces
         public Task<IEnumerable<Employee>> GetEmployeeDetails();
         public Task<Employee?> GetEmployeeDetails(int id);
         public Task UpdateEmployee(Employee employee);
-        public Task<UserInfo?> GetUserInfoAsync(string email, string password);
+       // public Task<UserInfo?> GetUserInfoAsync(string email, string password);
 
     }
 }

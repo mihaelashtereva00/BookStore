@@ -23,6 +23,7 @@ namespace BookStore.Extentions
             services.AddSingleton<IPersonService, PersonService>();
             services.AddSingleton<IAuthorService, AuthorServices>();
             services.AddSingleton<IBookService, BookService>();
+            services.AddTransient<IIdentityService, IdentityService>();
             services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
             
             return services;

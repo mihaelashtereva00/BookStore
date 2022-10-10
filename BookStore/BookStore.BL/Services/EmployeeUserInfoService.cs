@@ -3,61 +3,49 @@ using BookStore.BL.Interfaces;
 using BookStore.DL.Interfaces;
 using BookStore.Models.Models.User;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookStore.BL.Services
 {
     public class EmployeeUserInfoService : IEmployeeService
     {
         private readonly IEmployeesRepository _employeesRepository;
-        private readonly IUserInfoRepository _userInfoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<EmployeeUserInfoService> _logger;
 
-        public EmployeeUserInfoService(IEmployeesRepository employeesRepository, IUserInfoRepository userInfoRepository, IMapper mapper, ILogger<EmployeeUserInfoService> logger)
+        public EmployeeUserInfoService(IEmployeesRepository employeesRepository, IMapper mapper, ILogger<EmployeeUserInfoService> logger)
         {
             _mapper = mapper;
             _logger = logger;
             _employeesRepository = employeesRepository;
-            _userInfoRepository = userInfoRepository;
         }
-        public Task AddEmployee(Employee employee)
+        public async Task AddEmployee(Employee employee)
         {
-            return _employeesRepository.AddEmployee(employee);
-        }
-
-        public Task<bool> CheckEmployee(int id)
-        {
-            return _employeesRepository.CheckEmployee(id);
+             await  _employeesRepository.AddEmployee(employee);
         }
 
-        public Task DeleteEmployee(int id)
+        public async Task<bool> CheckEmployee(int id)
         {
-            return _employeesRepository.DeleteEmployee(id);
+            return await _employeesRepository.CheckEmployee(id);
         }
 
-        public Task<IEnumerable<Employee>> GetEmployeeDetails()
+        public async Task DeleteEmployee(int id)
         {
-            return _employeesRepository.GetEmployeeDetails();
+            await _employeesRepository.DeleteEmployee(id);
         }
 
-        public Task<Employee?> GetEmployeeDetails(int id)
+        public async Task<IEnumerable<Employee>> GetEmployeeDetails()
         {
-            return _employeesRepository.GetEmployeeDetails(id);
+            return await _employeesRepository.GetEmployeeDetails();
         }
 
-        public Task<UserInfo?> GetUserInfoAsync(string email, string password)
+        public async Task<Employee?> GetEmployeeDetails(int id)
         {
-            return _userInfoRepository.GetUserInfoAsync(email, password);
+            return await _employeesRepository.GetEmployeeDetails(id);
         }
 
-        public Task UpdateEmployee(Employee employee)
+        public async Task UpdateEmployee(Employee employee)
         {
-            return _employeesRepository.UpdateEmployee(employee);
+            await _employeesRepository.UpdateEmployee(employee);
         }
     }
 }

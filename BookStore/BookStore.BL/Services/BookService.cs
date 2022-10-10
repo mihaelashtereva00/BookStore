@@ -6,6 +6,7 @@ using BookStore.DL.Repositories.MsSql;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
@@ -66,6 +67,7 @@ namespace BookStore.BL.Services
             }
         }
 
+        [Authorize ]
         public async Task<Book?> DeleteBook(int bookId)
         {
             return await _bookInMemoryRepository.DeleteBook(bookId);

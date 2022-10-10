@@ -14,14 +14,10 @@ namespace BookStore.Controllers
     {
         private readonly IEmployeeService _employeeService;
         private readonly ILogger<EmployeeController> _logger;
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
 
-        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper, IMediator mediator)
+        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService)
         {
             _logger = logger;
-            _mapper = mapper;
-            _mediator = mediator;
             _employeeService = employeeService;
 
         }
@@ -38,8 +34,8 @@ namespace BookStore.Controllers
         [HttpGet("Get all")]
         public async Task<IActionResult> Get()
         {
-            await _employeeService.GetEmployeeDetails();
-            return Ok();
+           // await _employeeService.GetEmployeeDetails();
+            return Ok(await _employeeService.GetEmployeeDetails());
         }
 
 
@@ -47,8 +43,8 @@ namespace BookStore.Controllers
         [HttpGet(nameof(GetById))]
         public async Task<IActionResult> GetById(int id)
         {
-            await _employeeService.GetEmployeeDetails(id);
-            return Ok();
+            
+            return Ok(await _employeeService.GetEmployeeDetails(id));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

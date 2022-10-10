@@ -75,7 +75,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 
-builder.Services.AddIdentity<UserInfo, UserRole>().AddUserStore<UserInfoStore>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("View",
+        policy => policy.RequireClaim("View"));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+        policy.RequireClaim("Admin"));
+});
+
 //health  checks
 builder.Services.AddHealthChecks()
     .AddCheck<SqlHealthCheck>("SQL Server")
@@ -83,6 +94,10 @@ builder.Services.AddHealthChecks()
     .AddUrlGroup(new Uri("https://google.bg"), name: "Google Service");
 
 builder.Services.AddMediatR(typeof(GetAllBooksCommandHandler).Assembly);
+
+builder.Services.AddIdentity<UserInfo, UserRole>()
+    .AddUserStore<UserInfoStore>()
+    .AddRoleStore<UserRoleStore>();
 
 //App builder below
 var app = builder.Build();

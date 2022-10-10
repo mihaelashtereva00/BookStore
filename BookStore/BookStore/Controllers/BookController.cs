@@ -5,6 +5,7 @@ using BookStore.Models.MediatR.Commands;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -40,7 +41,7 @@ namespace BookStore.Controllers
             _mediator = mediator;
         }
 
-
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("Get all")]
@@ -53,7 +54,7 @@ namespace BookStore.Controllers
             return Ok(result);
         }
 
-
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "User")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
