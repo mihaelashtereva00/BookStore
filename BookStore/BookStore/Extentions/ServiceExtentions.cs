@@ -1,4 +1,5 @@
 ﻿using BookStore.BL.Interfaces;
+using BookStore.BL.Kafka;
 using BookStore.BL.Services;
 using BookStore.DL.Interfaces;
 using BookStore.DL.Repositories.InMemoryRepositories;
@@ -25,6 +26,8 @@ namespace BookStore.Extentions
             services.AddSingleton<IBookService, BookService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
+            //services.AddSingleton<IHostedService ,KafkaConsumerService<int,string>>();
+            services.AddSingleton<KafkaProducerService<int,string>>();
             
             return services;
         }
