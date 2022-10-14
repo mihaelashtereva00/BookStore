@@ -1,9 +1,10 @@
 using BookStore.BL.CommandHandlers;
-using BookStore.BL.Kafka;
+using BookStore.Caches.Settings;
 using BookStore.DL.Repositories.MsSql;
 using BookStore.Extentions;
 using BookStore.HealthChecks;
 using BookStore.Middleware;
+using BookStore.Models.Models;
 using BookStore.Models.Models.Configurations;
 using BookStore.Models.Models.User;
 using FluentValidation;
@@ -29,10 +30,13 @@ builder.Logging.AddSerilog(logger);
 builder.Services.Configure<MyJsonSettings>(builder.Configuration.GetSection(nameof(MyJsonSettings)));
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<KafkaSettingsProducer>(builder.Configuration.GetSection(nameof(KafkaSettingsProducer)));
+builder.Services.Configure<KafkaSettingsConsumer>(builder.Configuration.GetSection(nameof(KafkaSettingsConsumer)));
+
 
 // Add services to the container. 
 builder.Services.RegisterRepositories()
-                .RegisterServices()
+                .RegisterServices<int,Book>()
+                .Subsribe2Cache<int,Book>()
                 .AddAutoMapper(typeof(Program));
 
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
@@ -99,7 +103,6 @@ builder.Services.AddHealthChecks()
     .AddCheck<CustomHealthCheck>("Author Service")
     .AddUrlGroup(new Uri("https://google.bg"), name: "Google Service");
 
-builder.Services.AddHostedService<KafkaConsumerService<int,string>>();
 
 builder.Services.AddMediatR(typeof(GetAllBooksCommandHandler).Assembly);
 

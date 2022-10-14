@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BookStore.BL.Interfaces;
 using BookStore.DL.Interfaces;
-using BookStore.DL.Repositories.InMemoryRepositories;
-using BookStore.DL.Repositories.MsSql;
 using BookStore.Models.Models;
 using BookStore.Models.Requests;
 using BookStore.Models.Responses;

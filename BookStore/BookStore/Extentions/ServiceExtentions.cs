@@ -1,9 +1,14 @@
 ﻿using BookStore.BL.Interfaces;
 using BookStore.BL.Kafka;
 using BookStore.BL.Services;
+using BookStore.Caches;
 using BookStore.DL.Interfaces;
 using BookStore.DL.Repositories.InMemoryRepositories;
 using BookStore.DL.Repositories.MsSql;
+using BookStore.Caches;
+using WebAPI.Models;
+using BookStore.Models.Models;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace BookStore.Extentions
 {
@@ -19,16 +24,24 @@ namespace BookStore.Extentions
 
             return services;
         }
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        public static IServiceCollection RegisterServices<TKey, TValue>(this IServiceCollection services) where TValue : ICacheItem<TKey>
         {
-            services.AddSingleton<IPersonService, PersonService>();
-            services.AddSingleton<IAuthorService, AuthorServices>();
-            services.AddSingleton<IBookService, BookService>();
-            services.AddTransient<IIdentityService, IdentityService>();
-            services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
-            //services.AddSingleton<IHostedService ,KafkaConsumerService<int,string>>();
-            services.AddSingleton<KafkaProducerService<int,string>>();
-            
+            {
+                services.AddSingleton<IPersonService, PersonService>();
+                services.AddSingleton<IAuthorService, AuthorServices>();
+                services.AddSingleton<IBookService, BookService>();
+                services.AddTransient<IIdentityService, IdentityService>();
+                services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
+                services.AddSingleton<KafkaProducerService<int, string>>();
+
+                return services;
+            }
+        }
+
+        public static IServiceCollection Subsribe2Cache<TKey, TValue>(this IServiceCollection services) where   TValue : ICacheItem<TKey>
+        {
+                services.AddSingleton<KafkaHostedService<TKey, TValue>>();
+
             return services;
         }
     }
