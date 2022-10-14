@@ -41,12 +41,12 @@ namespace BookStore.Caches
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var cr = _consumer.Consume();
+
                     list.Add(cr.Value); 
                     Console.WriteLine($"Recieved msg with key:{cr.Value.GetKey()} value:{cr.Value}");
                 };
 
-            return Task.FromResult(list);
-
+            return Task.FromResult(list); //Tsak.Completed
         }
     }
 }

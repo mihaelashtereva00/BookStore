@@ -20,15 +20,14 @@ namespace BookStore.Controllers
             _kafkaHostedService = kafkaHostedService;
             _token = new CancellationTokenSource();
             _books = new List<Book>();
-            _kafkaHostedService.StartAsync(_books, _token.Token);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<List<Book>> GetAll()
+        public  Task<List<Book>> GetAll()
         {
-            
-            return await Task.FromResult(_books);
+            return  _kafkaHostedService.StartAsync(_books, _token.Token);
+           // return  Task.FromResult(_books);
         }
     }
 }
