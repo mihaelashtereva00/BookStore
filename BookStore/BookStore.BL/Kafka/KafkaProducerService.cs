@@ -29,8 +29,6 @@ namespace BookStore.BL.Kafka
             var msg = new Message<Key, Value>() { Key = key, Value = value};
 
             var result = producer.ProduceAsync("Topic", msg);
-            if (result != null)
-                Console.WriteLine($"Delivered");
         }
     }
 }
