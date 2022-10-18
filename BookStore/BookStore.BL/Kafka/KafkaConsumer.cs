@@ -6,14 +6,14 @@ using Microsoft.Extensions.Options;
 
 namespace BookStore.BL.Kafka
 {
-    public class KafkaConsumerService<Key, Value> : IHostedService
+    public class KafkaConsumer<Key, Value> : IHostedService
     {
 
         IOptions<KafkaSettings> _kafkaSettings;
         public IConsumer<Key, Value> _consumer;
         private ConsumerConfig _consumerConfig;
 
-        public KafkaConsumerService(IOptions<KafkaSettings> kafkaSettings)
+        public KafkaConsumer(IOptions<KafkaSettings> kafkaSettings)
         {
             _kafkaSettings = kafkaSettings;
             _consumerConfig = new ConsumerConfig()

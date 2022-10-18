@@ -1,22 +1,19 @@
 ﻿using BookStore.Caches.Settings;
 using BookStore.MessagePack;
 using Confluent.Kafka;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using WebAPI.Models;
 
 namespace BookStore.Caches
 {
-    public class KafkaHostedService<Key, Value>  where Value : ICacheItem<Key>
+    public class KafkaConsumerService<Key, Value> where Value : ICacheItem<Key>
     {
-
-        private IOptions<KafkaSettingsConsumer> _kafkaSettings;
         public IConsumer<Key, Value> _consumer;
+        private IOptions<KafkaSettingsConsumer> _kafkaSettings;
         private ConsumerConfig _consumerConfig;
 
-        public KafkaHostedService(IOptions<KafkaSettingsConsumer> kafkaSettings)
+        public KafkaConsumerService(IOptions<KafkaSettingsConsumer> kafkaSettings)
         {
-
             _kafkaSettings = kafkaSettings;
 
             _consumerConfig = new ConsumerConfig()
@@ -34,19 +31,17 @@ namespace BookStore.Caches
             _consumer.Subscribe(typeof(Value).Name);
         }
 
-
-        public Task<List<Value>> StartAsync(List<Value> list ,CancellationToken cancellationToken)
+        public void StartAsync(List<Value> list, CancellationToken cancellationToken)
         {
 
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    var cr = _consumer.Consume();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var cr = _consumer.Consume();
 
-                    list.Add(cr.Value); 
-                    Console.WriteLine($"Recieved msg with key:{cr.Value.GetKey()} value:{cr.Value}");
-                };
+                list.Add(cr.Value);
+                Console.WriteLine($"Recieved msg with key:{cr.Value.GetKey()} value:{cr.Value}");
+            };
 
-            return Task.FromResult(list); //Tsak.Completed
         }
     }
 }
