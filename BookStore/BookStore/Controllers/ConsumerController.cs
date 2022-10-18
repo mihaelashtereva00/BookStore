@@ -1,9 +1,6 @@
-﻿using BookStore.BL.Interfaces;
-using BookStore.Caches;
+﻿using BookStore.Caches;
 using BookStore.Models.Models;
-using BookStore.Models.Models.User;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace BookStore.Controllers
 {
@@ -11,23 +8,18 @@ namespace BookStore.Controllers
     [Route("[controller]")]
     public class ConsumerController
     {
-        private readonly KafkaHostedService<int, Book> _kafkaHostedService;
-        private readonly CancellationTokenSource _token;
-        private readonly List<Book> _books;
+        private readonly KafkaCacheService<int, Book> _kafkaCahce;
 
-        public ConsumerController(KafkaHostedService<int, Book> kafkaHostedService)
+        public ConsumerController(KafkaCacheService<int, Book> kafkaCahce)
         {
-            _kafkaHostedService = kafkaHostedService;
-            _token = new CancellationTokenSource();
-            _books = new List<Book>();
+            _kafkaCahce = kafkaCahce;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public  Task<List<Book>> GetAll()
+        public Task<List<Book>> GetAll()
         {
-            return  _kafkaHostedService.StartAsync(_books, _token.Token);
-           // return  Task.FromResult(_books);
+            return _kafkaCahce.GetData();
         }
     }
 }

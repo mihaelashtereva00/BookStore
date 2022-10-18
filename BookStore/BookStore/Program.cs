@@ -31,11 +31,12 @@ builder.Services.Configure<MyJsonSettings>(builder.Configuration.GetSection(name
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<KafkaSettingsProducer>(builder.Configuration.GetSection(nameof(KafkaSettingsProducer)));
 builder.Services.Configure<KafkaSettingsConsumer>(builder.Configuration.GetSection(nameof(KafkaSettingsConsumer)));
+builder.Services.Configure<MongoDbConfiguration>(builder.Configuration.GetSection(nameof(MongoDbConfiguration)));
 
 
 // Add services to the container. 
 builder.Services.RegisterRepositories()
-                .RegisterServices<int,Book>()
+                .RegisterServices()
                 .Subsribe2Cache<int,Book>()
                 .AddAutoMapper(typeof(Program));
 
