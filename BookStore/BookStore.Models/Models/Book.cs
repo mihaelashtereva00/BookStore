@@ -1,5 +1,5 @@
 ﻿using MessagePack;
-using WebAPI.Models;
+using BookStore.Models;
 
 namespace BookStore.Models.Models
 {

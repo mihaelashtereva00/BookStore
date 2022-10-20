@@ -13,6 +13,7 @@ namespace BookStore.BL.Kafka
         public IConsumer<Key, Value> _consumer;
         private ConsumerConfig _consumerConfig;
 
+
         public KafkaConsumer(IOptions<KafkaSettings> kafkaSettings)
         {
             _kafkaSettings = kafkaSettings;

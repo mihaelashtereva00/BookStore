@@ -1,16 +1,20 @@
 ﻿using BookStore.Caches.Settings;
 using BookStore.MessagePack;
 using Confluent.Kafka;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using WebAPI.Models;
+using BookStore.Models;
 
 namespace BookStore.Caches
 {
-    public class KafkaConsumerService<Key, Value> where Value : ICacheItem<Key>
+    public abstract class KafkaConsumerService<Key, Value> : IHostedService 
     {
         public IConsumer<Key, Value> _consumer;
         private IOptions<KafkaSettingsConsumer> _kafkaSettings;
         private ConsumerConfig _consumerConfig;
+        //private List<Value> _list;
+        private Message<Key, Value> _message;
+        private CancellationTokenSource _cancellationTokenSource;
 
         public KafkaConsumerService(IOptions<KafkaSettingsConsumer> kafkaSettings)
         {
@@ -29,19 +33,13 @@ namespace BookStore.Caches
                     .Build();
 
             _consumer.Subscribe(typeof(Value).Name);
+
+            _cancellationTokenSource  = new CancellationTokenSource();
         }
 
-        public void StartAsync(List<Value> list, CancellationToken cancellationToken)
-        {
+        public abstract void HandleMessage(Value value);
 
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var cr = _consumer.Consume();
-
-                list.Add(cr.Value);
-                Console.WriteLine($"Recieved msg with key:{cr.Value.GetKey()} value:{cr.Value}");
-            };
-
-        }
+        public abstract Task StartAsync(CancellationToken cancellationToken);
+        public abstract Task StopAsync(CancellationToken cancellationToken);
     }
 }

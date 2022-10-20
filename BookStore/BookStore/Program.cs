@@ -4,7 +4,6 @@ using BookStore.DL.Repositories.MsSql;
 using BookStore.Extentions;
 using BookStore.HealthChecks;
 using BookStore.Middleware;
-using BookStore.Models.Models;
 using BookStore.Models.Models.Configurations;
 using BookStore.Models.Models.User;
 using FluentValidation;
@@ -23,6 +22,7 @@ var logger = new LoggerConfiguration()
     .WriteTo.Console(theme: AnsiConsoleTheme.Code)
     .CreateLogger();
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddSerilog(logger);
@@ -33,11 +33,9 @@ builder.Services.Configure<KafkaSettingsProducer>(builder.Configuration.GetSecti
 builder.Services.Configure<KafkaSettingsConsumer>(builder.Configuration.GetSection(nameof(KafkaSettingsConsumer)));
 builder.Services.Configure<MongoDbConfiguration>(builder.Configuration.GetSection(nameof(MongoDbConfiguration)));
 
-
 // Add services to the container. 
 builder.Services.RegisterRepositories()
                 .RegisterServices()
-                .Subsribe2Cache<int,Book>()
                 .AddAutoMapper(typeof(Program));
 
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();

@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Models
+﻿namespace BookStore.Models
 {
     public interface ICacheItem<out T>
     {
