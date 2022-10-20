@@ -1,4 +1,4 @@
-﻿using WebAPI.Models;
+﻿using BookStore.Models;
 
 namespace BookStore.Caches
 {
@@ -12,9 +12,9 @@ namespace BookStore.Caches
         {
             _consumer = consumer;
             _list = new List<Value>();  
-            _token = new CancellationTokenSource(3);
+            _token = new CancellationTokenSource();
 
-            _consumer.StartAsync(_list, _token.Token);
+            //_consumer.StartAsync(_list, _token.Token);
         }
 
         public async Task<List<Value>> GetData()

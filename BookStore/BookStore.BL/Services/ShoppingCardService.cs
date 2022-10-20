@@ -7,7 +7,7 @@ namespace BookStore.BL.Services
 {
     public class ShoppingCardService : IShoppingCard
     {
-        private readonly IPurcahseRepository _purchaseRepository; //shopping card repo
+        private readonly IPurcahseRepository _purchaseRepository; 
         private readonly IShoppingCartRepository _cart;
 
         public ShoppingCardService(IPurcahseRepository repository, IShoppingCartRepository cart)
@@ -22,14 +22,13 @@ namespace BookStore.BL.Services
             return result;
         }
 
-
         public Task<ShoppingCart> Update(ShoppingCart cart)
         {
             var result = _cart.UpdateCart(cart);
             return result;
         }
 
-        public Task<ShoppingCart> FinishPurchase(int userId) //shopping card -> purchase repo 
+        public Task<ShoppingCart> FinishPurchase(int userId)
         {
             var crt = _cart.Get(userId);
 
