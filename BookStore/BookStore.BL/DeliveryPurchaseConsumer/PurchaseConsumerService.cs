@@ -35,7 +35,7 @@ namespace BookStore.BL.DeliveryPurchaseConsumer
 
                 if (purchase.Books != null && purchase.Books.Count() != 0)
                 {
-                    var aditionalInfo = _service.AddAditionalInfo().Result.Distinct();
+                    var aditionalInfo = _service.AddAditionalInfo().Result;
 
                     foreach (var book in purchase.Books)
                     {
@@ -49,7 +49,7 @@ namespace BookStore.BL.DeliveryPurchaseConsumer
 
                         if (aditionalInfo.Count() != 0)
                         {
-                            var info = aditionalInfo.FirstOrDefault(a => a.AuthorId == b.AuthorId);
+                            var info = aditionalInfo.DistinctBy(a => a.AuthorId).First(a => a.AuthorId == b.AuthorId);
 
                             if (info != null)
                             {
