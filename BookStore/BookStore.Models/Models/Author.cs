@@ -4,6 +4,5 @@
     {
         public DateTime DateOfBirth { get; init; }
         public string Nickname { get; init; }
-
     }
 }

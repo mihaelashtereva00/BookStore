@@ -32,6 +32,7 @@ builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameo
 builder.Services.Configure<KafkaSettingsProducer>(builder.Configuration.GetSection(nameof(KafkaSettingsProducer)));
 builder.Services.Configure<KafkaSettingsConsumer>(builder.Configuration.GetSection(nameof(KafkaSettingsConsumer)));
 builder.Services.Configure<MongoDbConfiguration>(builder.Configuration.GetSection(nameof(MongoDbConfiguration)));
+builder.Services.Configure<HttpClientConfig>(builder.Configuration.GetSection(nameof(HttpClientConfig)));
 
 // Add services to the container. 
 builder.Services.RegisterRepositories()

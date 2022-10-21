@@ -36,6 +36,7 @@ namespace BookStore.Extentions
                 services.AddSingleton<IEmployeeService, EmployeeUserInfoService>();
                 services.AddSingleton<KafkaProducerService<int, string>>();
                 services.AddSingleton<KafkaConsumer<int, string>>();
+                services.AddHttpClient<HttpClientProvider>();
                 services.AddHostedService<PurchaseConsumerService>();
                 services.AddHostedService<DeliveryConsumerService>();
 

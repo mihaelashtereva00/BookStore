@@ -3,6 +3,7 @@ using BookStore.Caches.Settings;
 using BookStore.DL.Interfaces;
 using BookStore.Models;
 using BookStore.Models.Models;
+using BookStore.Models.Models.Configurations;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -10,23 +11,32 @@ using System.Threading.Tasks.Dataflow;
 
 namespace BookStore.BL.DeliveryPurchaseConsumer
 {
-    public class PurchaseConsumerService : KafkaConsumerService<Guid, Purchase>// where Purchase : ICacheItem<Guid>, IHostedService
+    public class PurchaseConsumerService : KafkaConsumerService<Guid, Purchase>
     {
-        IBookRepository _bookRepository;
-        TransformBlock<Purchase, Purchase> _transferBlockPurchase;
+        private IBookRepository _bookRepository;
+        private TransformBlock<Purchase, Purchase> _transferBlockPurchase;
         private CancellationTokenSource _cancellationTokenSource;
+        private HttpClientProvider _service;
+        private IOptions<HttpClientConfig> _httpClientConfig;
 
         public PurchaseConsumerService(IOptions<KafkaSettingsConsumer> kafkaSettings,
-            IBookRepository bookRepository)
+            IBookRepository bookRepository,
+            IOptions<HttpClientConfig> httpClientConfig)
             : base(kafkaSettings)
         {
+            _httpClientConfig = httpClientConfig;
             _bookRepository = bookRepository;
             _cancellationTokenSource = new CancellationTokenSource();
+            _service = new HttpClientProvider(_httpClientConfig);
 
             _transferBlockPurchase = new TransformBlock<Purchase, Purchase>(purchase =>
             {
+                List<string> list = new List<string>();
+
                 if (purchase.Books != null && purchase.Books.Count() != 0)
                 {
+                    var aditionalInfo = _service.AddAditionalInfo().Result.GroupBy(a => a.AuthorId, a => a.AditionalInfo).Select(x => new {AuthorId = x.Key, AdditionalInfo = x.ToString()});
+
                     foreach (var book in purchase.Books)
                     {
                         var b = _bookRepository.GetById(book.Id).Result;
@@ -35,10 +45,22 @@ namespace BookStore.BL.DeliveryPurchaseConsumer
                         {
                             b.Quantity--;
                             _bookRepository.UpdateBook(b);
+                        }
 
+                        if (aditionalInfo.Count() != 0)
+                        {
+                            var info = aditionalInfo.First(a => a.AuthorId == b.AuthorId);
+
+                            if (info != null)
+                            {
+                                list.Add(info.ToString());
+                            }
                         }
                     }
                 }
+                purchase.AdditionalInfo = list;
+
+                Console.WriteLine(purchase.AdditionalInfo.Count());
 
                 return purchase;
             });
@@ -50,7 +72,6 @@ namespace BookStore.BL.DeliveryPurchaseConsumer
             });
 
             _transferBlockPurchase.LinkTo(actionBlock);
-
         }
 
         public override void HandleMessage(Purchase purchase) //purchase
